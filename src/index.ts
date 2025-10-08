@@ -1,5 +1,4 @@
 import * as ch from './commandhandler.js';
-import { argv } from 'node:process';
 
 function main() {
     const registry: ch.CommandsRegistry = {

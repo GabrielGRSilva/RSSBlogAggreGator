@@ -7,7 +7,7 @@ export type CommandsRegistry = { //Type to hold available commands
     handler: Record<string, CommandHandler>
 };
 
-export function handlerLogin(cmdName: string, ...args: string[]){
+export function handlerLogin(_cmdName: string, ...args: string[]){
     if (args.length == 0){
         console.log('You need to login using a username! login [USERNAME]');
         process.exit(1);
