@@ -18,6 +18,8 @@ function main() {
 
     const cmd = userInputs[2];
     const args = userInputs.slice(3)
+
+    ch.runCommand(registry, cmd, ...args);
 };
 
 main();

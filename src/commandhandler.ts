@@ -1,10 +1,11 @@
 import {setUser} from './config.js';
+import { argv } from 'node:process';
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => void;
 
 export type CommandsRegistry = { //Type to hold available commands
     name: string[],
-    handler: CommandHandler[]
+    handler: Record<string, CommandHandler>
 };
 
 export function handlerLogin(cmdName: string, ...args: string[]){
@@ -19,15 +20,13 @@ export function handlerLogin(cmdName: string, ...args: string[]){
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){ //This function registers a new handler function for a command name.
     registry.name.push(cmdName);
-    registry.handler.push(handler);
+    registry.handler[cmdName] = handler;
 };
 
 export function runCommand(registry: CommandsRegistry, cmdName: string, ...args: string[]){ //This function runs a given command with the provided state if it exists.
     for (let cmd of registry.name){
         if (cmdName == cmd){
-            const foundHandler = registry.handler[registry.name.indexOf(cmd)];
-
-            foundHandler(cmdName, ...args);
+            registry.handler[cmdName](cmdName, ...args);
             return;
         };
     };
