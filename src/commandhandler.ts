@@ -1,5 +1,4 @@
 import {setUser} from './config.js';
-import { argv } from 'node:process';
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => void;
 
@@ -9,8 +8,9 @@ export type CommandsRegistry = { //Type to hold available commands
 };
 
 export function handlerLogin(cmdName: string, ...args: string[]){
-    if (!args || args.length > 1){
-        throw new Error('You need to login using a username! login [USERNAME]');
+    if (args.length == 0){
+        console.log('You need to login using a username! login [USERNAME]');
+        process.exit(1);
     };
 
     setUser(args[0]); //Sets the username
@@ -30,5 +30,6 @@ export function runCommand(registry: CommandsRegistry, cmdName: string, ...args:
             return;
         };
     };
-    throw new Error('Command not found!');
+    console.log('Command not found!');
+    process.exit(1);
 };

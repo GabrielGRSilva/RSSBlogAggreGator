@@ -1,17 +1,16 @@
-import {setUser, readConfig} from './config.js';
 import * as ch from './commandhandler.js';
 import { argv } from 'node:process';
 
 function main() {
     const registry: ch.CommandsRegistry = {
         name: [],
-        handler: []
+        handler: {} as Record<string, ch.CommandHandler>
     };
 
     ch.registerCommand(registry, 'login', ch.handlerLogin);
     const userInputs = process.argv;
 
-    if (userInputs.length < 2){
+    if (userInputs.length < 3){
         console.log("No commands were given!");
         process.exit(1);
     };
