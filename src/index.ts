@@ -1,4 +1,4 @@
-import {setUser, readConfig} from './config';
+import {setUser, readConfig} from './config.js';
 
 function main() {
     setUser('Gabriel Silva');
