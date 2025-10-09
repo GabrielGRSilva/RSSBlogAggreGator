@@ -2,29 +2,34 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
-const homeDir = os.homedir();
-
 export type Config = { //Representes JSON structure
   dbUrl: string,
   currentUserName: string
 };
 
+
+export function checkGatorConfig(): void { //Checks and creates .gatorconfig.json if it doesnt exist
+    const cfgPath = getConfigFilePath();
+
+    if (!fs.existsSync(cfgPath)){
+
+        const standardGator: Config = { 
+            dbUrl: "postgres://example",
+            currentUserName: "" 
+        };
+
+        fs.writeFileSync(cfgPath, JSON.stringify(standardGator));
+    };
+};
+
 export function setUser(username: string): void { //Writes new Config in JSON file with passed username
-    const path = getConfigFilePath();
+    const cfgPath = getConfigFilePath();
+    const cfg = fs.existsSync(cfgPath)
+    ? readConfig()
+    :{dbUrl: "postgres://example", currentUserName: "" };
 
-    const data = fs.readFileSync(path, 'utf-8');
-
-    const startConfig: Config ={
-        dbUrl: "postgres://example",
-        currentUserName: username
-    };
-
-    const cfg = JSON.stringify(startConfig);
-
-    if (!data.includes("cfg")){ //Check if config isnt already in file
-        fs.writeFileSync(path, cfg);
-    };
-
+    cfg.currentUserName = username;
+    fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2)+"\n");
 };
 
 export function readConfig(): Config{ //Returns Config object from .gatorconfig.json
@@ -40,7 +45,7 @@ export function readConfig(): Config{ //Returns Config object from .gatorconfig.
 };
 
 function getConfigFilePath(): string {
-    return path.join(homeDir, ".gatorconfig.json");
+    return path.join(os.homedir(), ".gatorconfig.json");
 };
 
 function validateConfig(rawConfig: any): boolean { //used by readConfig to validate the result of JSON.parse

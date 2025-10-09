@@ -1,6 +1,9 @@
 import * as ch from './commandhandler.js';
+import {checkGatorConfig} from './config.js';
 
 function main() {
+    checkGatorConfig();
+
     const registry: ch.CommandsRegistry = {
         name: [],
         handler: {} as Record<string, ch.CommandHandler>
