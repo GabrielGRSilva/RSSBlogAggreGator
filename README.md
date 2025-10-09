@@ -20,3 +20,5 @@ All commands use a single type:
 ```
 type CommandHandler = (cmdName: string, ...args: string[]) => void;
 ```
+
+#Note: Running this app will create a hidden file named .gatorconfig.json in your home directory. This is used to track the username you provide (or change it) and the database URL.

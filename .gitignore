@@ -1,3 +1,4 @@
 node_modules
-repl.log
 dist
+drizzle.config.ts
+env

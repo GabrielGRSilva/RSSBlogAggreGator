@@ -14,7 +14,7 @@ export function checkGatorConfig(): void { //Checks and creates .gatorconfig.jso
     if (!fs.existsSync(cfgPath)){
 
         const standardGator: Config = { 
-            dbUrl: "postgres://example",
+            dbUrl: "",
             currentUserName: "" 
         };
 
@@ -26,7 +26,7 @@ export function setUser(username: string): void { //Writes new Config in JSON fi
     const cfgPath = getConfigFilePath();
     const cfg = fs.existsSync(cfgPath)
     ? readConfig()
-    :{dbUrl: "postgres://example", currentUserName: "" };
+    :{dbUrl: "", currentUserName: "" };
 
     cfg.currentUserName = username;
     fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2)+"\n");
