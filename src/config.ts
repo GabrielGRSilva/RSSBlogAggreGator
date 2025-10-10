@@ -22,7 +22,7 @@ export function checkGatorConfig(): void { //Checks and creates .gatorconfig.jso
     };
 };
 
-export function setUser(username: string): void { //Writes new Config in JSON file with passed username
+export async function setUser(username: string): Promise<void> { //Writes new Config in JSON file with passed username
     const cfgPath = getConfigFilePath();
     const cfg = fs.existsSync(cfgPath)
     ? readConfig()

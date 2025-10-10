@@ -1,7 +1,7 @@
 import * as ch from './commandhandler.js';
 import {checkGatorConfig} from './config.js';
 
-function main() {
+async function main() {
     checkGatorConfig();
 
     const registry: ch.CommandsRegistry = {
@@ -20,7 +20,9 @@ function main() {
     const cmd = userInputs[2];
     const args = userInputs.slice(3)
 
-    ch.runCommand(registry, cmd, ...args);
+    await ch.runCommand(registry, cmd, ...args);
+
+    process.exit(0);
 };
 
 main();
