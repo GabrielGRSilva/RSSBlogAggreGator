@@ -49,6 +49,10 @@ export async function handlerRegister(_cmdName: string, ...args: string[]): Prom
     };
 };
 
+export async function handlerReset(_cmdName: string, ...args: string[]): Promise<void>{
+    await db.resetDatabase()
+};
+
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){ //This function registers a new handler function for a command name.
   
     registry.name.push(cmdName);

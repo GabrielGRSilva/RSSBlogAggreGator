@@ -11,6 +11,7 @@ async function main() {
 
     ch.registerCommand(registry, 'login', ch.handlerLogin);
     ch.registerCommand(registry, 'register', ch.handlerRegister);
+    ch.registerCommand(registry, 'reset', ch.handlerReset);
     const userInputs = process.argv;
 
     if (userInputs.length < 3){
