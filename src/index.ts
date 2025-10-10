@@ -1,15 +1,16 @@
-import * as ch from './commandhandler.js';
-import {checkGatorConfig} from './config.js';
+import * as ch from './commandhandler';
+import {checkGatorConfig} from './config';
 
 async function main() {
     checkGatorConfig();
 
     const registry: ch.CommandsRegistry = {
         name: [],
-        handler: {} as Record<string, ch.CommandHandler>
+        handler: {}
     };
 
     ch.registerCommand(registry, 'login', ch.handlerLogin);
+    ch.registerCommand(registry, 'register', ch.handlerRegister);
     const userInputs = process.argv;
 
     if (userInputs.length < 3){

@@ -1,5 +1,5 @@
-import {setUser} from './config.js';
-import * as db from "./db/queries/users.js"
+import {setUser} from './config';
+import * as db from "./db/queries/users"
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -9,6 +9,15 @@ export type CommandsRegistry = { //Type to hold available commands
 };
 
 export async function handlerLogin(_cmdName: string, ...args: string[]): Promise<void>{
+    try{
+        if (await db.getUserByName(args[0]) == undefined){
+            throw new Error("Failed to login. User wasn't found in the database!");
+        };
+        }catch(err){
+            console.log(err);
+            process.exit(1);
+        };
+    
     if (args.length == 0){
         console.log('You need to login using a username! login [USERNAME]');
         process.exit(1);
@@ -19,7 +28,7 @@ export async function handlerLogin(_cmdName: string, ...args: string[]): Promise
     console.log(`Username ${args[0]} has been set!`);
 };
 
-export async function handlerUser(_cmdName: string, ...args: string[]): Promise<void>{
+export async function handlerRegister(_cmdName: string, ...args: string[]): Promise<void>{
 
     if (args.length == 0){
         console.log('No username has been given! register [USERNAME]');
@@ -32,26 +41,25 @@ export async function handlerUser(_cmdName: string, ...args: string[]): Promise<
         };
         await db.createUser(args[0]);
         setUser(args[0]); //set user in the config file
+        console.log(`User ${args[0]} created sucessfully!`)
+        
     }catch(err){
         console.log(err);
         process.exit(1);
     };
-
-    console.log(`User ${args[0]} sucessfully created!`);
-    console.log(`DEBUG ${args[0]} data:\n`);
-    console.log(`DEBUG ${db.getUserByName(args[0])}`);
-
 };
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){ //This function registers a new handler function for a command name.
+  
     registry.name.push(cmdName);
     registry.handler[cmdName] = handler;
 };
 
 export async function runCommand(registry: CommandsRegistry, cmdName: string, ...args: string[]){ //This function runs a given command with the provided state if it exists.
+
     for (let cmd of registry.name){
         if (cmdName == cmd){
-            registry.handler[cmdName](cmdName, ...args);
+            await registry.handler[cmdName](cmdName, ...args);
             return;
         };
     };
