@@ -30,18 +30,19 @@ export async function fetchFeed(feedURL: string){
 
         //Parse and build the response into xml
         const responseText = await response.text();
-        const JSONobj = processXMLtoJSON(responseText);
+        const JSONobj = processXMLtoJSON(responseText).rss;
+        console.log(JSONobj);
 
-        if (!("channel" in JSONobj)){
+        if (!(JSONobj.channel)){
             throw new Error("Something is wrong: No channel found on parsed JSON object after fetch!");
         };
 
         //Extracting Metadata
-        const channel = JSONobj.channel;
         let title = "";
         let link = "";
         let description = "";
         let itemList: string[][] = [[]];
+        const channel = JSONobj.channel;
 
         if(channel.title){
             title = channel.title;
@@ -75,7 +76,7 @@ export async function fetchFeed(feedURL: string){
 
 };
 
-function processXMLtoJSON(responseContent: string): RSSFeed { //Builds XML obj from response string
+function processXMLtoJSON(responseContent: string) { //Builds XML obj from response string
     try{
     const parser = new XMLParser();
     const parsedObj = parser.parse(responseContent);
