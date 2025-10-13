@@ -30,3 +30,14 @@ export async function resetDatabase(){
     console.log(err);
   };
 };
+
+export async function getUsers(){ //Lists all users found in the DB
+  try{
+    const result = await db.select({eachName: users.name}).from(users);
+    return result;
+
+  }catch(err){
+    console.log(err);
+  };
+
+};

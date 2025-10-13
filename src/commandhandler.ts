@@ -1,4 +1,4 @@
-import {setUser} from './config';
+import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users"
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -48,6 +48,29 @@ export async function handlerRegister(_cmdName: string, ...args: string[]): Prom
         process.exit(1);
     };
 };
+
+export async function handlerUsers(cmdName: string, ...args: string[]): Promise<void>{
+                   
+    const currentUser = readConfig().currentUserName;
+
+    const usersInfo = await db.getUsers();
+
+    if(usersInfo != undefined){
+
+        for(let {eachName} of usersInfo){
+            if(eachName == currentUser){
+            console.log(`* ${eachName} (current)`);
+
+            }else{
+                console.log(`* ${eachName}`);
+            };
+        };
+
+    }else{
+        console.log("No users found in the database!");
+    };
+};
+
 
 export async function handlerReset(_cmdName: string, ...args: string[]): Promise<void>{
     await db.resetDatabase()
