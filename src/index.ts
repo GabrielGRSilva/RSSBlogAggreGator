@@ -5,8 +5,7 @@ import { createRegistry } from './commands';
 async function main() {
     checkGatorConfig();
 
-    const registry = createRegistry();
-
+    const registry = createRegistry(); //Sets registry of commands
     const userInputs = process.argv;
 
     if (userInputs.length < 3){

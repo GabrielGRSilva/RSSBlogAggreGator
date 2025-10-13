@@ -10,6 +10,7 @@ export function createRegistry(): ch.CommandsRegistry {
     ch.registerCommand(registry, 'register', ch.handlerRegister);
     ch.registerCommand(registry, 'reset', ch.handlerReset);
     ch.registerCommand(registry, 'users', ch.handlerUsers);
+    ch.registerCommand(registry, 'agg', ch.handlerAgg);
 
     return registry;
 };

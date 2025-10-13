@@ -1,5 +1,6 @@
 import {setUser, readConfig} from './config';
-import * as db from "./db/queries/users"
+import * as db from "./db/queries/users";
+import {fetchFeed} from "./fetcher";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -47,6 +48,12 @@ export async function handlerRegister(_cmdName: string, ...args: string[]): Prom
         console.log(err);
         process.exit(1);
     };
+};
+
+export async function handlerAgg(cmdName: string, ...args: string[]): Promise<void>{
+    const data = await fetchFeed("https://www.wagslane.dev/index.xml") //DEBUG -> Test feed! Remove in final version
+
+    console.log(JSON.stringify(data));
 };
 
 export async function handlerUsers(cmdName: string, ...args: string[]): Promise<void>{
