@@ -1,6 +1,6 @@
 import { db } from "..";
 import { getUserByName } from "./users";
-import { users, feeds, feedFollows } from "../schema";
+import { users, feeds, feed_follows } from "../schema";
 import { eq, sql } from "drizzle-orm";
 import {readConfig} from "../../config";
 
@@ -42,6 +42,7 @@ export async function getFeedFollow(feedUrl: string){ //Inserts new feed follow 
 };
 
 export async function follow(url: string){ //Create follow record for a RSS url
+    
     try{
     const currentUsername = readConfig().currentUserName;
 
@@ -51,7 +52,7 @@ export async function follow(url: string){ //Create follow record for a RSS url
 
     if(currentUser){//check if not undefined
 
-    const [newFeedFollow] = await db.insert(feedFollows).values({user_id: currentUser.id, feed_id: feed.id}).returning();
+    const [newFeedFollow] = await db.insert(feed_follows).values({user_id: currentUser.id, feed_id: feed.id}).returning();
     console.log(`${feed.name} record for ${currentUser.name} successfully created!`);
     return newFeedFollow;
     };
@@ -65,13 +66,18 @@ export async function getFeedFollowsForUser(username: string){
     try{
     const userObj = await getUserByName(username);
 
-    
-    
+    if(userObj){
+        //DEBUG check if correct
+    const [userFollows] = await db.select({feedName: feeds.name, username: users.name})
+    .from(feeds).innerJoin(users,eq(feeds.id, users.id))
+    .where(sql`${feeds.user_id} = ${userObj.id}`);
 
-    /*
-    Add a getFeedFollowsForUser function. It should return all the feed follows for a given user, and include the names of the feeds and user in the result.
-    */
+    /*const [userFollows] = await db.select({feedName: feeds.name, username: users.name})
+    .from(feeds).innerJoin(feedFollows,eq(feedFollows.user_id, userObj.id))
+    .where(sql`${feedFollows.user_id} = ${userObj.id}`);*/
 
+    return userFollows;
+    };
 
     }catch(err){
         console.log(err);

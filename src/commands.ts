@@ -14,6 +14,7 @@ export function createRegistry(): ch.CommandsRegistry {
     ch.registerCommand(registry, 'addfeed', ch.handlerAddFeed);
     ch.registerCommand(registry, 'feeds', ch.handlerFeeds);
     ch.registerCommand(registry, 'follow', ch.handlerFollow);
+    ch.registerCommand(registry, 'following', ch.handlerFollowing);
 
     return registry;
 };

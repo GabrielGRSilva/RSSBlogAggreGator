@@ -44,17 +44,17 @@ export async function handlerAddFeed(_cmdName: string, ...args: string[]): Promi
         const currentUser = await db.getUserByName(currentUsername);
         
         if (currentUser){
-            let newFeed = await fd.createFeed(feedName, url, currentUser.id);
-            if(newFeed){
+            const newFeed = await fd.createFeed(feedName, url, currentUser.id);
+            const newFollowRecord = await fd.follow(url);
+            if(newFeed && newFollowRecord){
 
-            console.log(`${feedName} created successfully!`);
-            printFeed(newFeed, currentUser);
+            console.log(`${feedName} created successfully for ${currentUser.name}!`);
 
-            }else{
-                throw new Error("Error in creating new feed!"); //If newFeed is undefined
-            };
-        }else{
-            throw new Error ("Unable to find current user in the database!"); //If currentUser undefined
+            }else{//If newFeed or newFollowRecord is undefined
+                throw new Error("Error in creating new feed!"); 
+                };
+        }else{//If currentUser undefined
+            throw new Error ("Unable to find current user in the database!");
         };
     
     }catch(err){
@@ -91,9 +91,15 @@ export async function handlerFollow(_cmdName: string, ...args: string[]): Promis
     if (args.length < 1){
         throw new Error("You must provide the URL for the feed you want to follow!");
     };
+    console.log(`DEBUG: handlerfollowarg === ${args[0]}`);
+    await fd.follow(args[0]);
+};
 
-    //COMPLETE THIS FUNCTION!!!!!!!!!!!!!!!!!
-
+export async function handlerFollowing(_cmdName: string, ...args: string[]): Promise<void>{ //Prints feeds followed by current user
+    const currentUsername = readConfig().currentUserName;
+    const followedFeeds = await fd.getFeedFollowsForUser(currentUsername);
+    
+    console.log(`Feeds followed by ${currentUsername}:\n ${followedFeeds}`);
 };
 
 export async function handlerRegister(_cmdName: string, ...args: string[]): Promise<void>{
