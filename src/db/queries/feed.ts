@@ -11,3 +11,14 @@ export async function createFeed(name: string, url: string, user_id: string) {
     console.log(err);
   };
 };
+
+export async function getFeeds(){ //Lists all feeds found in the DB
+  try{
+    const result = await db.select({eachName: feeds.name, eachUrl: feeds.url, eachId: feeds.user_id}).from(feeds);
+    return result;
+
+  }catch(err){
+    console.log(err);
+  };
+
+};

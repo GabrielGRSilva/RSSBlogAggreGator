@@ -22,6 +22,16 @@ export async function getUserByName(name: string){
   };
 };
 
+export async function getUserById(id: string){
+  try{
+  //Equals to -> SELECT * FROM users WHERE id = id;
+  const [result] = await db.select().from(users).where(eq(users.id, id));
+  return result;
+  }catch(err){
+    console.log(err);
+  };
+};
+
 export async function resetDatabase(){
   try{
     await db.execute(sql`TRUNCATE TABLE users CASCADE;`);

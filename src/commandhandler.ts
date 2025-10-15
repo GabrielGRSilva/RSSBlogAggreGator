@@ -31,7 +31,7 @@ export async function handlerLogin(_cmdName: string, ...args: string[]): Promise
     console.log(`Username ${args[0]} has been set!`);
 };
 
-export async function handlerFeed(_cmdName: string, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
+export async function handlerAddFeed(_cmdName: string, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
     if(args.length<2){
         throw new Error("Not enough arguments given! Feed needs a name and url!\nExample:\n 'addfeed Hacker News RSS' https://hnrss.org/newest");
     };
@@ -60,6 +60,30 @@ export async function handlerFeed(_cmdName: string, ...args: string[]): Promise<
     }catch(err){
         console.log(err);
         process.exit(1);
+    };
+};
+
+export async function handlerFeeds(_cmdName: string, ...args: string[]): Promise<void>{
+    try{
+    const feedsInfo = await fd.getFeeds();
+
+    if(feedsInfo != undefined){
+
+        for(let feed of feedsInfo){
+            let feedCreator = await db.getUserById(feed.eachId);
+
+            if(feedCreator){//If feedCreator isn't undefined, print the info from this feed
+            console.log(`Feed: ${feed.eachName}`);
+            console.log(`URL: ${feed.eachUrl}`);
+            console.log(`Creator: ${feedCreator.name}\n`);
+            };
+        };
+
+    }else{
+        console.log("No users found in the database!");
+    };
+    }catch(err){
+        console.log(err);
     };
 };
 
