@@ -33,7 +33,7 @@ export async function handlerLogin(_cmdName: string, ...args: string[]): Promise
 
 export async function handlerFeed(_cmdName: string, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
     if(args.length<2){
-        throw new Error("Not enough arguments given! Feed needs a name and url!");
+        throw new Error("Not enough arguments given! Feed needs a name and url!\nExample:\n 'addfeed Hacker News RSS' https://hnrss.org/newest");
     };
 
     const currentUsername = readConfig().currentUserName;

@@ -24,7 +24,7 @@ export async function getUserByName(name: string){
 
 export async function resetDatabase(){
   try{
-    await db.execute(sql`TRUNCATE TABLE users;`);
+    await db.execute(sql`TRUNCATE TABLE users CASCADE;`);
     console.log("Truncated users table sucessfully!");
   }catch(err){
     console.log(err);
