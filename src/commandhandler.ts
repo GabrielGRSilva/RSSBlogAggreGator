@@ -1,6 +1,8 @@
 import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users";
+import * as fd from "./db/queries/feed";
 import {fetchFeed} from "./fetcher";
+import {printFeed} from "./helper";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -27,6 +29,38 @@ export async function handlerLogin(_cmdName: string, ...args: string[]): Promise
     setUser(args[0]); //Sets the username
 
     console.log(`Username ${args[0]} has been set!`);
+};
+
+export async function handlerFeed(_cmdName: string, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
+    if(args.length<2){
+        throw new Error("Not enough arguments given! Feed needs a name and url!");
+    };
+
+    const currentUsername = readConfig().currentUserName;
+    const feedName = args[0];
+    const url = args[1];
+
+    try{
+        const currentUser = await db.getUserByName(currentUsername);
+        
+        if (currentUser){
+            let newFeed = await fd.createFeed(feedName, url, currentUser.id);
+            if(newFeed){
+
+            console.log(`${feedName} created successfully!`);
+            printFeed(newFeed, currentUser);
+
+            }else{
+                throw new Error("Error in creating new feed!"); //If newFeed is undefined
+            };
+        }else{
+            throw new Error ("Unable to find current user in the database!"); //If currentUser undefined
+        };
+    
+    }catch(err){
+        console.log(err);
+        process.exit(1);
+    };
 };
 
 export async function handlerRegister(_cmdName: string, ...args: string[]): Promise<void>{
@@ -78,7 +112,6 @@ export async function handlerUsers(cmdName: string, ...args: string[]): Promise<
     };
 };
 
-
 export async function handlerReset(_cmdName: string, ...args: string[]): Promise<void>{
     await db.resetDatabase()
 };
@@ -100,3 +133,4 @@ export async function runCommand(registry: CommandsRegistry, cmdName: string, ..
     console.log('Command not found!');
     process.exit(1);
 };
+

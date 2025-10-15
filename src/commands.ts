@@ -11,6 +11,7 @@ export function createRegistry(): ch.CommandsRegistry {
     ch.registerCommand(registry, 'reset', ch.handlerReset);
     ch.registerCommand(registry, 'users', ch.handlerUsers);
     ch.registerCommand(registry, 'agg', ch.handlerAgg);
+    ch.registerCommand(registry, 'addfeed', ch.handlerFeed);
 
     return registry;
 };
