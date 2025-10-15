@@ -13,6 +13,7 @@ export function createRegistry(): ch.CommandsRegistry {
     ch.registerCommand(registry, 'agg', ch.handlerAgg);
     ch.registerCommand(registry, 'addfeed', ch.handlerAddFeed);
     ch.registerCommand(registry, 'feeds', ch.handlerFeeds);
+    ch.registerCommand(registry, 'follow', ch.handlerFollow);
 
     return registry;
 };

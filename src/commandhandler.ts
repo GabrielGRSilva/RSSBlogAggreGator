@@ -87,6 +87,15 @@ export async function handlerFeeds(_cmdName: string, ...args: string[]): Promise
     };
 };
 
+export async function handlerFollow(_cmdName: string, ...args: string[]): Promise<void>{
+    if (args.length < 1){
+        throw new Error("You must provide the URL for the feed you want to follow!");
+    };
+
+    //COMPLETE THIS FUNCTION!!!!!!!!!!!!!!!!!
+
+};
+
 export async function handlerRegister(_cmdName: string, ...args: string[]): Promise<void>{
 
     if (args.length == 0){
