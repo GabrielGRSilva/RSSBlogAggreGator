@@ -1,6 +1,7 @@
 import * as ch from './commandhandler';
 import {checkGatorConfig} from './config';
 import { createRegistry } from './commands';
+import "dotenv/config";
 
 async function main() {
     checkGatorConfig();
