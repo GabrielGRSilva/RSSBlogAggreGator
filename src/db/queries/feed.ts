@@ -29,11 +29,11 @@ export async function getFeedFollow(feedUrl: string){ //Inserts new feed follow 
     try{
     await follow(feedUrl); //Creates new follow record for the RSS url
 
-    const result = await db.select({id: feedFollows.id, createdAt: feedFollows.createdAt, updatedAt: feedFollows.updatedAt,
+    const result = await db.select({id: feed_follows.id, createdAt: feed_follows.createdAt, updatedAt: feed_follows.updatedAt,
         feedName: feeds.name,
         userName: users.name,
-     }).from(feedFollows).innerJoin(feeds, eq(feedFollows.id, feeds.id))
-     .innerJoin(users, eq(feedFollows.id, users.id));
+     }).from(feed_follows).innerJoin(feeds, eq(feed_follows.id, feeds.id))
+     .innerJoin(users, eq(feed_follows.id, users.id));
 
     return result;
     }catch(err){
@@ -67,14 +67,10 @@ export async function getFeedFollowsForUser(username: string){
     const userObj = await getUserByName(username);
 
     if(userObj){
-        //DEBUG check if correct
-    const [userFollows] = await db.select({feedName: feeds.name, username: users.name})
-    .from(feeds).innerJoin(users,eq(feeds.id, users.id))
-    .where(sql`${feeds.user_id} = ${userObj.id}`);
 
-    /*const [userFollows] = await db.select({feedName: feeds.name, username: users.name})
-    .from(feeds).innerJoin(feedFollows,eq(feedFollows.user_id, userObj.id))
-    .where(sql`${feedFollows.user_id} = ${userObj.id}`);*/
+    const userFollows = await db.select({feedName: feeds.name})
+    .from(feeds).innerJoin(feed_follows,eq(feed_follows.user_id, userObj.id))
+    .where(sql`${feed_follows.feed_id} = ${feeds.id}`);
 
     return userFollows;
     };

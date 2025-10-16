@@ -98,8 +98,17 @@ export async function handlerFollow(_cmdName: string, ...args: string[]): Promis
 export async function handlerFollowing(_cmdName: string, ...args: string[]): Promise<void>{ //Prints feeds followed by current user
     const currentUsername = readConfig().currentUserName;
     const followedFeeds = await fd.getFeedFollowsForUser(currentUsername);
-    
-    console.log(`Feeds followed by ${currentUsername}:\n ${followedFeeds}`);
+
+    if(followedFeeds && followedFeeds.length > 0){
+        console.log(`Feeds followed by ${currentUsername}:\n`);
+        for(let feed of followedFeeds){
+            console.log(`${feed.feedName}`);
+            };
+    }else if(followedFeeds && followedFeeds.length === 0){
+        console.log(`Feed followed by ${currentUsername}:\n ${followedFeeds}`);
+    }else{
+        console.log(`User ${currentUsername} isn't following any feeds!`);
+    };
 };
 
 export async function handlerRegister(_cmdName: string, ...args: string[]): Promise<void>{
