@@ -91,7 +91,7 @@ export async function handlerFollow(_cmdName: string, ...args: string[]): Promis
     if (args.length < 1){
         throw new Error("You must provide the URL for the feed you want to follow!");
     };
-    console.log(`DEBUG: handlerfollowarg === ${args[0]}`);
+
     await fd.follow(args[0]);
 };
 
