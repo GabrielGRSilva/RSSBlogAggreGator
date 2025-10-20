@@ -1,13 +1,12 @@
 import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users";
 import * as fd from "./db/queries/feed";
-import {fetchFeed} from "./fetcher";
-import {User, CommandHandler, UserCommandHandler} from "./commandsignatures"
+import {User, CommandHandler, CommandsRegistry} from "./commandsignatures"
 
-export type CommandsRegistry = { //Type to hold available commands
-    name: string[],
-    handler: Record<string, CommandHandler>
-};
+function handleError(err: unknown) {
+  const e = err instanceof Error ? err : new Error(String(err));
+  console.error(`[${new Date().toISOString()}] scrape error:`, e.message);
+}
 
 export async function handlerLogin(_cmdName: string, ...args: string[]): Promise<void>{
     try{
@@ -136,13 +135,51 @@ export async function handlerRegister(_cmdName: string, ...args: string[]): Prom
     };
 };
 
-export async function handlerAgg(cmdName: string, ...args: string[]): Promise<void>{
-    const data = await fetchFeed("https://www.wagslane.dev/index.xml") //DEBUG -> Test feed! Remove in final version
+export async function handlerAgg(_cmdName: string, ...args: string[]): Promise<void>{
 
-    console.log(JSON.stringify(data));
+    console.log(`Collecting feeds every ${args[0]}`);
+
+    await fd.scrapeFeeds().catch(handleError); //First scrape is instant when the command runs
+
+    const parsedIntervalDuration = parseDuration(args[0]);
+
+    if (parsedIntervalDuration <= 0 || !Number.isFinite(parsedIntervalDuration)){
+        throw new Error("There was a problem parsing the interval duration!");
+    };
+
+    const interval = setInterval(() => {
+    fd.scrapeFeeds().catch(handleError);
+    }, parsedIntervalDuration);
+
+    console.log(`[${new Date().toISOString()}] Collecting feeds every ${args[0]} (${parsedIntervalDuration}ms)`);
+
+    await new Promise<void>((resolve) => { //Guarantees the agg is killed before exiting to avoid problems
+    process.on("SIGINT", () => {
+    console.log("Shutting down feed aggregator...");
+    clearInterval(interval);
+    resolve();
+    });
+    });
 };
 
-export async function handlerUsers(cmdName: string, ...args: string[]): Promise<void>{
+function parseDuration(durationStr: string): number {
+  const regex = /^(\d+)(ms|s|m|h)$/;
+  const match = durationStr.match(regex);
+  if (!match) return NaN;
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+
+  switch (unit) {
+    case "ms": return value;
+    case "s":  return value * 1000;
+    case "m":  return value * 60 * 1000;
+    case "h":  return value * 60 * 60 * 1000;
+    default:   return NaN;
+  };
+};
+
+export async function handlerUsers(_cmdName: string, ..._args: string[]): Promise<void>{
                    
     const currentUser = readConfig().currentUserName;
 
@@ -164,7 +201,7 @@ export async function handlerUsers(cmdName: string, ...args: string[]): Promise<
     };
 };
 
-export async function handlerReset(_cmdName: string, ...args: string[]): Promise<void>{
+export async function handlerReset(_cmdName: string, ..._args: string[]): Promise<void>{
     await db.resetDatabase()
 };
 

@@ -8,6 +8,11 @@ export type User = {
     name: string;
 };
 
+export type CommandsRegistry = { //Type to hold available commands
+    name: string[],
+    handler: Record<string, CommandHandler>
+};
+
 export type UserCommandHandler = (
   cmdName: string,
   user: User,

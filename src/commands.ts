@@ -1,8 +1,8 @@
 import * as ch from './commandhandler';
-import {middlewareLoggedIn, UserCommandHandler} from './commandsignatures'
+import {middlewareLoggedIn, CommandsRegistry} from './commandsignatures'
 
-export function createRegistry(): ch.CommandsRegistry {
-    const registry: ch.CommandsRegistry = {
+export function createRegistry(): CommandsRegistry {
+    const registry: CommandsRegistry = {
         name: [],
         handler: {}
     };

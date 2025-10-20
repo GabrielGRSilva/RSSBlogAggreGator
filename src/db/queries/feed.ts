@@ -3,6 +3,7 @@ import { getUserByName } from "./users";
 import { users, feeds, feed_follows } from "../schema";
 import { eq, sql, and } from "drizzle-orm";
 import {readConfig} from "../../config";
+import {fetchFeed} from "../../fetcher";
 
 export async function createFeed(name: string, url: string, user_id: string){
   try{
@@ -88,7 +89,7 @@ export async function unfollow(user: string, url: string){//Delete follow record
     }else{;
     console.log(`Feed from url ${url} unfollowed successfully!`);
     };
-    
+
   }catch(err){
     console.log(err);
   };
@@ -111,6 +112,49 @@ export async function getFeedFollowsForUser(username: string){
     }catch(err){
         console.log(err);
     };
+};
+
+export async function scrapeFeeds(){ //Print nextFeed info to the console (oldest fetched one)
+  try{
+    const nextFeed = await getNextFeedToFetch();
+
+    if(nextFeed){
+      await markFeedFetched(nextFeed.id);
+      const fetchedFeed = await fetchFeed(nextFeed.url);
+      if (fetchedFeed){
+      console.log(`Feed: ${fetchedFeed.title}`);
+      console.log(`Description: ${fetchedFeed.description}`);
+      for(let item of fetchedFeed.items){
+        console.log(`---${item[0]}`);
+        };
+      console.log("---------------------------");
+      };
+    };
+  }catch(err){
+    console.log(err);
+  };
+};
+
+async function markFeedFetched(feedId: string){ //Sets current time as last_fetched_at and UpdatedAt for a certain Feed by
+  try{
+    await db.update(feeds).set({
+      last_fetched_at: sql`NOW()`,
+      updatedAt: sql`NOW()`,
+    }).where(eq(feeds.id, feedId));
+
+  }catch(err){
+    console.log(err);
+  };
+};
+
+async function getNextFeedToFetch(){
+  try{
+  const [nextFeed] = await db.select().from(feeds).orderBy(sql`${feeds.last_fetched_at} desc nulls first`); 
+
+  return nextFeed;
+  }catch(err){
+    console.log(err);
+  }
 };
 
 async function getFeedByUrl(url: string){
