@@ -55,6 +55,19 @@ export async function handlerAddFeed(_cmdName: string, user: User, ...args: stri
     };
 };
 
+export async function handlerUnfollowFeed(_cmdName: string, user: User, ...args: string[]): Promise<void>{
+
+    if(args.length<1){
+        throw new Error("Not enough arguments given! You need to provide the url for the feed you want to unfollow!\nExample:\n deletefeed 'https://hnrss.org/newest'");
+    };
+
+    try{
+        await fd.unfollow(user.name, args[0]);
+    }catch(err){
+        console.log(err);
+    };  
+};
+
 export async function handlerFeeds(_cmdName: string, ..._args: string[]): Promise<void>{
     try{
     const feedsInfo = await fd.getFeeds();
@@ -95,7 +108,7 @@ export async function handlerFollowing(_cmdName: string, user: User, ..._args: s
         for(let feed of followedFeeds){
             console.log(`${feed.feedName}`);
             };
-    }else if(followedFeeds && followedFeeds.length === 0){
+    }else if(followedFeeds != undefined && followedFeeds.length === 1){
         console.log(`Feed followed by ${user.name}:\n ${followedFeeds}`);
     }else{
         console.log(`User ${user.name} isn't following any feeds!`);

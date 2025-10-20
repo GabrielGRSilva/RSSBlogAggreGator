@@ -1,7 +1,7 @@
 import { db } from "..";
 import { getUserByName } from "./users";
 import { users, feeds, feed_follows } from "../schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import {readConfig} from "../../config";
 
 export async function createFeed(name: string, url: string, user_id: string){
@@ -60,6 +60,39 @@ export async function follow(url: string){ //Create follow record for a RSS url
     }catch(err){
         console.log(err);
     };
+};
+
+export async function unfollow(user: string, url: string){//Delete follow record of a url feed for a user
+
+  try{
+    const userObj = await getUserByName(user);
+
+    if(!userObj) {
+      console.log(`User ${user} not found!`); 
+      return;
+    };
+
+    const feedObj = await getFeedByUrl(url);
+
+    if(!feedObj){
+      console.log(`No feed found for ${url}!`);
+      return;
+    };
+
+    const numberOfUnfollows = await db.delete(feed_follows).where(and(eq(feed_follows.feed_id, feedObj.id), 
+        eq(feed_follows.user_id, userObj.id))).returning();
+   
+
+    if (numberOfUnfollows.length === 0){
+      console.log(`The user wasn't following that feed, so nothing to unfollow here!`);
+    }else{;
+    console.log(`Feed from url ${url} unfollowed successfully!`);
+    };
+    
+  }catch(err){
+    console.log(err);
+  };
+
 };
 
 export async function getFeedFollowsForUser(username: string){

@@ -16,6 +16,7 @@ export function createRegistry(): ch.CommandsRegistry {
     ch.registerCommand(registry, 'feeds', ch.handlerFeeds);
     ch.registerCommand(registry, 'follow', middlewareLoggedIn(ch.handlerFollow));
     ch.registerCommand(registry, 'following', middlewareLoggedIn(ch.handlerFollowing));
+    ch.registerCommand(registry, 'unfollow', middlewareLoggedIn(ch.handlerUnfollowFeed));
 
     return registry;
 };

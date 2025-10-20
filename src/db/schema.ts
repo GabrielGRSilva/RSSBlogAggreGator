@@ -16,12 +16,12 @@ export const feeds = pgTable("feeds", {
   user_id: uuid("user_id").references(()=> users.id, {onDelete: 'cascade'}).notNull(),
 });
 
-export const feed_follows = pgTable("feed_follows", {
+export const feed_follows = pgTable("feed_follows", { //Relations table Feeds + Users
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
   user_id: uuid("user_id").references(() => users.id, {onDelete: 'cascade'}).notNull(),
   feed_id: uuid("feed_id").references(() => feeds.id,{onDelete: 'cascade'}).notNull()
 }, (t) => [
-  unique().on(t.user_id, t.feed_id), //DEBUG - Check if this line is correct
+  unique().on(t.user_id, t.feed_id),
 ]);
