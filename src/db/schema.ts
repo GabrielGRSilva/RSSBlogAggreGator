@@ -26,3 +26,14 @@ export const feed_follows = pgTable("feed_follows", { //Relations table Feeds + 
 }, (t) => [
   unique().on(t.user_id, t.feed_id),
 ]);
+
+export const posts = pgTable("posts", { //Posts from scraped URLs
+  id: uuid("id").primaryKey().defaultRandom().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
+  title: text("title").notNull().unique(),
+  url:  text("url").notNull().unique(),
+  description: text("description").unique(),
+  published_at: text("published_at").notNull() ,
+  feed_id: uuid("feed_id").references(() => feeds.id,{onDelete: 'cascade'}).notNull(),
+});
