@@ -2,9 +2,7 @@ import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users";
 import * as fd from "./db/queries/feed";
 import {fetchFeed} from "./fetcher";
-import {printFeed} from "./helper";
-
-export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
+import {User, CommandHandler, UserCommandHandler} from "./commandsignatures"
 
 export type CommandsRegistry = { //Type to hold available commands
     name: string[],
@@ -31,39 +29,33 @@ export async function handlerLogin(_cmdName: string, ...args: string[]): Promise
     console.log(`Username ${args[0]} has been set!`);
 };
 
-export async function handlerAddFeed(_cmdName: string, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
+export async function handlerAddFeed(_cmdName: string, user: User, ...args: string[]): Promise<void>{ //Creates a new feed connected to the currentUser
     if(args.length<2){
         throw new Error("Not enough arguments given! Feed needs a name and url!\nExample:\n 'addfeed Hacker News RSS' https://hnrss.org/newest");
     };
 
-    const currentUsername = readConfig().currentUserName;
     const feedName = args[0];
     const url = args[1];
 
     try{
-        const currentUser = await db.getUserByName(currentUsername);
         
-        if (currentUser){
-            const newFeed = await fd.createFeed(feedName, url, currentUser.id);
-            const newFollowRecord = await fd.follow(url);
-            if(newFeed && newFollowRecord){
+        const newFeed = await fd.createFeed(feedName, url, user.id);
+        const newFollowRecord = await fd.follow(url);
+        if(newFeed && newFollowRecord){
 
-            console.log(`${feedName} created successfully for ${currentUser.name}!`);
+        console.log(`${feedName} created successfully for ${user.name}!`);
 
             }else{//If newFeed or newFollowRecord is undefined
                 throw new Error("Error in creating new feed!"); 
                 };
-        }else{//If currentUser undefined
-            throw new Error ("Unable to find current user in the database!");
-        };
-    
+
     }catch(err){
         console.log(err);
         process.exit(1);
     };
 };
 
-export async function handlerFeeds(_cmdName: string, ...args: string[]): Promise<void>{
+export async function handlerFeeds(_cmdName: string, ..._args: string[]): Promise<void>{
     try{
     const feedsInfo = await fd.getFeeds();
 
@@ -87,7 +79,7 @@ export async function handlerFeeds(_cmdName: string, ...args: string[]): Promise
     };
 };
 
-export async function handlerFollow(_cmdName: string, ...args: string[]): Promise<void>{
+export async function handlerFollow(_cmdName: string, _user: User, ...args: string[]): Promise<void>{
     if (args.length < 1){
         throw new Error("You must provide the URL for the feed you want to follow!");
     };
@@ -95,19 +87,18 @@ export async function handlerFollow(_cmdName: string, ...args: string[]): Promis
     await fd.follow(args[0]);
 };
 
-export async function handlerFollowing(_cmdName: string, ...args: string[]): Promise<void>{ //Prints feeds followed by current user
-    const currentUsername = readConfig().currentUserName;
-    const followedFeeds = await fd.getFeedFollowsForUser(currentUsername);
+export async function handlerFollowing(_cmdName: string, user: User, ..._args: string[]): Promise<void>{ //Prints feeds followed by current user
+    const followedFeeds = await fd.getFeedFollowsForUser(user.name);
 
     if(followedFeeds && followedFeeds.length > 0){
-        console.log(`Feeds followed by ${currentUsername}:\n`);
+        console.log(`Feeds followed by ${user.name}:\n`);
         for(let feed of followedFeeds){
             console.log(`${feed.feedName}`);
             };
     }else if(followedFeeds && followedFeeds.length === 0){
-        console.log(`Feed followed by ${currentUsername}:\n ${followedFeeds}`);
+        console.log(`Feed followed by ${user.name}:\n ${followedFeeds}`);
     }else{
-        console.log(`User ${currentUsername} isn't following any feeds!`);
+        console.log(`User ${user.name} isn't following any feeds!`);
     };
 };
 
