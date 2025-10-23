@@ -138,13 +138,15 @@ export async function handlerRegister(_cmdName: string, ...args: string[]): Prom
 
 export async function handlerAgg(_cmdName: string, ...args: string[]): Promise<void>{
 
-    console.log(`Collecting feeds every ${args[0]}`);
+    const raw = args[0] ?? process.env.AGG_INTERVAL ?? "1m"; //Default if user doesnt provide a time interval
+
+    console.log(`Collecting feeds every ${raw}`);
 
     await fd.scrapeFeeds().catch(handleError); //First scrape is instant when the command runs
 
-    const parsedIntervalDuration = parseDuration(args[0]);
+    const parsedIntervalDuration = parseDuration(raw);
 
-    if (parsedIntervalDuration <= 0 || !Number.isFinite(parsedIntervalDuration)){
+    if (parsedIntervalDuration <= 0 || Number.isNaN(parsedIntervalDuration) || !Number.isFinite(parsedIntervalDuration)){
         throw new Error("There was a problem parsing the interval duration!");
     };
 
@@ -163,9 +165,12 @@ export async function handlerAgg(_cmdName: string, ...args: string[]): Promise<v
     });
 };
 
-function parseDuration(durationStr: string): number {
+function parseDuration(durationStr: string | undefined): number {
+  if (typeof durationStr !== "string") return NaN;
+
+  const trimmed = durationStr.trim();
   const regex = /^(\d+)(ms|s|m|h)$/;
-  const match = durationStr.match(regex);
+  const match = trimmed.match(regex);
   if (!match) return NaN;
 
   const value = parseInt(match[1], 10);
@@ -177,8 +182,8 @@ function parseDuration(durationStr: string): number {
     case "m":  return value * 60 * 1000;
     case "h":  return value * 60 * 60 * 1000;
     default:   return NaN;
-  };
-};
+  }
+}
 
 export async function handlerUsers(_cmdName: string, ..._args: string[]): Promise<void>{
                    
@@ -209,7 +214,7 @@ export async function handlerBrowse(_cmdName: string, user: User, ...args: strin
         limit = Number(args[0]);
     };
 
-    pt.getPostsForUser(user.name, limit);
+    await pt.getPostsForUser(user.name, limit);
     }catch(err){
         console.log(err);
     };

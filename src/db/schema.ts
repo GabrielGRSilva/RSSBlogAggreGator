@@ -31,7 +31,7 @@ export const posts = pgTable("posts", { //Posts from scraped URLs
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
-  title: text("title").notNull().unique(),
+  title: text("title").notNull(),
   url:  text("url").notNull().unique(),
   description: text("description").unique(),
   published_at: text("published_at").notNull() ,
