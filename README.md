@@ -5,7 +5,7 @@
 
 ## What is this?
 
-This is a service app that fetches (scrapes) data from URLs through CLI commands, using PostgreSQL and Drizzle. Written in TypeScript using Node.js during the Boot.Dev course Build a Blog Aggregator in Typescript.
+This is a service app that fetches (scrapes) data from URLs through CLI commands, using Node.js, PostgreSQL and Drizzle. Written in TypeScript using Node.js during the Boot.Dev course Build a Blog Aggregator in Typescript.
 
 ## Usage:
 
