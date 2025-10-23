@@ -1,8 +1,10 @@
 import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users";
 import * as fd from "./db/queries/feed";
-import * as pt from "./db/queries/posts"
-import {User, CommandHandler, CommandsRegistry} from "./commandsignatures"
+import * as pt from "./db/queries/posts";
+import {User, CommandHandler, CommandsRegistry} from "./commandsignatures";
+import readline from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
 
 function handleError(err: unknown) {
   const e = err instanceof Error ? err : new Error(String(err));
@@ -220,8 +222,21 @@ export async function handlerBrowse(_cmdName: string, user: User, ...args: strin
     };
 
 };
-export async function handlerReset(_cmdName: string, ..._args: string[]): Promise<void>{
-    await db.resetDatabase()
+
+export async function handlerReset(_cmdName: string, ..._args: string[]): Promise<void> {
+  const rl = readline.createInterface({ input, output });
+  const answer = await rl.question(
+    'WARNING!!! Are you sure you want to PURGE the entire database?\nWrite YESIMSURE to confirm: '
+  );
+  rl.close();
+
+  if (answer.trim() !== "YESIMSURE") {
+    console.log("Cancelling purge. The database wasn't changed.");
+    return;
+  };
+
+  await db.resetDatabase();
+  console.log("Database purged.");
 };
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){ //This function registers a new handler function for a command name.
