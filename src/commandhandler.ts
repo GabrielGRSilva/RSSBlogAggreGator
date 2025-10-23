@@ -1,6 +1,7 @@
 import {setUser, readConfig} from './config';
 import * as db from "./db/queries/users";
 import * as fd from "./db/queries/feed";
+import * as pt from "./db/queries/posts"
 import {User, CommandHandler, CommandsRegistry} from "./commandsignatures"
 
 function handleError(err: unknown) {
@@ -201,6 +202,19 @@ export async function handlerUsers(_cmdName: string, ..._args: string[]): Promis
     };
 };
 
+export async function handlerBrowse(_cmdName: string, user: User, ...args: string[]): Promise<void>{ //Check LIMIT latest posts from current user
+    let limit = 2;
+    try{
+    if(args[0]){
+        limit = Number(args[0]);
+    };
+
+    pt.getPostsForUser(user.name, limit);
+    }catch(err){
+        console.log(err);
+    };
+
+};
 export async function handlerReset(_cmdName: string, ..._args: string[]): Promise<void>{
     await db.resetDatabase()
 };

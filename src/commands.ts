@@ -8,7 +8,7 @@ export function createRegistry(): CommandsRegistry {
     };
 
     ch.registerCommand(registry, 'login', ch.handlerLogin);
-    ch.registerCommand(registry, 'register', ch.handlerRegister);
+    ch.registerCommand(registry, 'register', ch.handlerRegister); //ADD RESET CONFIRMATION
     ch.registerCommand(registry, 'reset', ch.handlerReset);
     ch.registerCommand(registry, 'users', ch.handlerUsers);
     ch.registerCommand(registry, 'agg', ch.handlerAgg);
@@ -17,6 +17,7 @@ export function createRegistry(): CommandsRegistry {
     ch.registerCommand(registry, 'follow', middlewareLoggedIn(ch.handlerFollow));
     ch.registerCommand(registry, 'following', middlewareLoggedIn(ch.handlerFollowing));
     ch.registerCommand(registry, 'unfollow', middlewareLoggedIn(ch.handlerUnfollowFeed));
+    ch.registerCommand(registry, 'browse', middlewareLoggedIn(ch.handlerBrowse));
 
     return registry;
 };

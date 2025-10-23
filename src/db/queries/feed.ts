@@ -4,6 +4,7 @@ import { users, feeds, feed_follows } from "../schema";
 import { eq, sql, and } from "drizzle-orm";
 import {readConfig} from "../../config";
 import {fetchFeed} from "../../fetcher";
+import * as pt from "../queries/posts"
 
 export async function createFeed(name: string, url: string, user_id: string){
   try{
@@ -125,9 +126,11 @@ export async function scrapeFeeds(){ //Print nextFeed info to the console (oldes
       console.log(`Feed: ${fetchedFeed.title}`);
       console.log(`Description: ${fetchedFeed.description}`);
       for(let item of fetchedFeed.items){
-        console.log(`---${item[0]}`);
+        let createdPost = await pt.createPost(item[0], item[1], item[2], item[3], nextFeed.id);
+        if (createdPost){
+        console.log(`Created Post ${createdPost.title} for ${fetchedFeed.title}`);
+         };
         };
-      console.log("---------------------------");
       };
     };
   }catch(err){

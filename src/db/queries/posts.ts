@@ -17,7 +17,7 @@ export async function createPost(title: string, url: string, description: string
     };
 };
 
-export async function getPostsForUser(user: string){
+export async function getPostsForUser(user: string, limit: number){
     try{
         const userObj = await getUserByName(user);
 
@@ -31,21 +31,13 @@ export async function getPostsForUser(user: string){
         
 
         if (postsOfUser) {
-            const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout
-            });
 
-            rl.question(`Found ${postsOfUser.length} posts. How many would you like to see?`, (answer) =>
-                {
-                const num = Number(answer);
-                console.log(`Showing ${num} posts for user ${user}:\n`);
-                for(let i = 0; i <= num; i++){
+            console.log(`Showing ${limit} posts for user ${user}:\n`);
+            for(let i = 0; i <= limit; i++){
 
-                    let eachPost = postsOfUser[i]
-                    console.log(`Title: ${eachPost.postTitle}\nLink: ${eachPost.postURL}`);
+                let eachPost = postsOfUser[i]
+                console.log(`Title: ${eachPost.postTitle}\nLink: ${eachPost.postURL}`);
                 };
-                rl.close();});
             };
         };
     }catch(err){
